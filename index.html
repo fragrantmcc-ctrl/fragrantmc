@@ -43,6 +43,7 @@
                 id="mobileMenuButton"
                 aria-label="Open navigation menu"
                 aria-expanded="false"
+                type="button"
             >
                 ☰
             </button>
@@ -64,9 +65,10 @@
 
             <div class="hero-content">
 
-                <div class="server-badge">
-                    <span class="online-dot"></span>
-                    Server Online
+                <!-- LIVE SERVER STATUS -->
+                <div class="server-badge" id="heroServerStatus">
+                    <span class="online-dot" id="heroStatusDot"></span>
+                    <span id="heroStatusText">Checking Server...</span>
                 </div>
 
                 <p class="hero-label">
@@ -356,12 +358,14 @@
 
         <div class="server-panel">
 
+            <!-- LIVE SERVER STATUS -->
+
             <div class="server-status">
 
                 <span id="serverStatusDot"></span>
 
                 <span id="serverStatus">
-                    Online
+                    Checking...
                 </span>
 
             </div>
@@ -369,14 +373,18 @@
 
             <div class="server-info">
 
+                <!-- PLAYER COUNT -->
+
                 <div>
                     <span>Players</span>
 
                     <strong id="playerCount">
-                        0 / 100
+                        Checking...
                     </strong>
                 </div>
 
+
+                <!-- JAVA IP -->
 
                 <div>
                     <span>Java IP</span>
@@ -387,6 +395,8 @@
                 </div>
 
 
+                <!-- BEDROCK IP -->
+
                 <div>
                     <span>Bedrock IP</span>
 
@@ -396,20 +406,25 @@
                 </div>
 
 
+                <!-- BEDROCK PORT -->
+
                 <div>
                     <span>Bedrock Port</span>
 
                     <strong id="bedrockPort">
-                        19132
+                        25565
                     </strong>
                 </div>
 
             </div>
 
 
+            <!-- COPY IP -->
+
             <button
                 id="copyIpButton"
                 data-copy-ip="fragrantmc.xyz"
+                type="button"
             >
                 COPY SERVER IP
             </button>
@@ -455,7 +470,7 @@
             </a>
 
             <a
-                href="https://www.tiktok.com/@genginer  "
+                href="https://www.tiktok.com/@genginer"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -581,20 +596,31 @@
             </div>
 
             <div>
-                <a href="https://discord.gg/4mbg9H6bqx" target="_blank" rel="noopener noreferrer">
+
+                <a
+                    href="https://discord.gg/ZkBN6f4KQY"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     Discord
                 </a>
 
                 ·
 
-                <a href="https://www.tiktok.com/@genginer" target="_blank" rel="noopener noreferrer">
+                <a
+                    href="https://www.tiktok.com/@genginer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     TikTok
                 </a>
+
             </div>
 
         </div>
 
     </footer>
+
 
 </body>
 </html>
