@@ -17,7 +17,7 @@ const SERVER_CONFIG = {
     bedrockIp: "fragrantmc.xyz",
 
     // Bedrock port
-    bedrockPort: "19132",
+    bedrockPort: "25565",
 
     // How often the website checks the server
     // 60,000 milliseconds = 60 seconds
