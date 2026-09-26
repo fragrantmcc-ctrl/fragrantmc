@@ -11,10 +11,10 @@
 const SERVER_CONFIG = {
 
     // Minecraft Java server address
-    javaIp: "fragrantmc.fun",
+    javaIp: "play.fragrantmc.fun",
 
     // Minecraft Bedrock server address
-    bedrockIp: "fragrantmc.fun",
+    bedrockIp: "play.fragrantmc.fun",
 
     // Bedrock port
     bedrockPort: "25751",
