@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    FRAGRANT MC
    Main JavaScript
@@ -531,5 +530,18 @@ async function updateServerInformation() {
 
 
 /* =========================================================
-   INITIAL SERVER STATU
+   INITIAL SERVER STATUS CHECK
+========================================================= */
+
+updateServerInformation();
+
+
+/* =========================================================
+   AUTOMATIC SERVER STATUS REFRESH
+========================================================= */
+
+setInterval(
+    updateServerInformation,
+    SERVER_CONFIG.refreshInterval
+);
 ```
