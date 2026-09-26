@@ -11,13 +11,13 @@
 const SERVER_CONFIG = {
 
     // Minecraft Java server address
-    javaIp: "fragrantmc.xyz",
+    javaIp: "fragrantmc.fun",
 
     // Minecraft Bedrock server address
-    bedrockIp: "fragrantmc.xyz",
+    bedrockIp: "fragrantmc.fun",
 
     // Bedrock port
-    bedrockPort: "25565",
+    bedrockPort: "25751",
 
     // How often the website checks the server
     // 60,000 milliseconds = 60 seconds
