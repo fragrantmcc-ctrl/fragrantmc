@@ -19,8 +19,8 @@ const SERVER_CONFIG = {
     // Minecraft Bedrock port
     bedrockPort: "25751",
 
-    // Website status refresh interval
-    // 60,000 milliseconds = 60 seconds
+    // Status refresh interval
+    // 60 seconds
     refreshInterval: 60000
 
 };
@@ -291,12 +291,12 @@ function setServerStatus(status, online) {
 
 
 /* =========================================================
-   UPDATE SERVER TEXT INFORMATION
+   UPDATE SERVER DETAILS
 ========================================================= */
 
 function updateServerDetails() {
 
-    /* JAVA IP */
+    /* JAVA */
 
     if (javaIp) {
 
@@ -306,7 +306,7 @@ function updateServerDetails() {
     }
 
 
-    /* BEDROCK IP */
+    /* BEDROCK */
 
     if (bedrockIp) {
 
@@ -335,8 +335,8 @@ function updateServerDetails() {
 async function updateServerInformation() {
 
     /*
-        Show checking state
-        while the API request is running.
+        Show checking while
+        the request is running.
     */
 
     setServerStatus(
@@ -354,31 +354,63 @@ async function updateServerInformation() {
 
 
     /*
-        Always keep the server
-        connection information updated.
+        Update displayed IP information.
     */
 
     updateServerDetails();
 
 
     /*
-        mcsrvstat.us Minecraft API
+        Minecraft server hostname.
+    */
 
-        The API checks:
+    const serverAddress =
+        SERVER_CONFIG.javaIp;
+
+
+    /*
+        mcsrvstat.us API.
+
+        The API will attempt to resolve
+        the Minecraft SRV record for:
 
         play.fragrantmc.fun
-
-        It can resolve the Minecraft
-        SRV record automatically.
     */
 
     const apiUrl =
         `https://api.mcsrvstat.us/3/${encodeURIComponent(
-            SERVER_CONFIG.javaIp
+            serverAddress
         )}`;
 
 
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "FRAGRANT MC STATUS CHECK"
+    );
+
+    console.log(
+        "Server:",
+        serverAddress
+    );
+
+    console.log(
+        "API:",
+        apiUrl
+    );
+
+    console.log(
+        "================================="
+    );
+
+
     try {
+
+        /*
+            Request server status.
+        */
 
         const response =
             await fetch(apiUrl, {
@@ -397,38 +429,35 @@ async function updateServerInformation() {
             });
 
 
+        console.log(
+            "API HTTP status:",
+            response.status
+        );
+
+
         /*
-            Check HTTP response.
+            Check HTTP status.
         */
 
         if (!response.ok) {
 
             throw new Error(
-                `API returned HTTP ${response.status}`
+                `HTTP ${response.status}`
             );
 
         }
 
 
         /*
-            Convert response to JSON.
+            Read JSON response.
         */
 
         const data =
             await response.json();
 
 
-        /*
-            Useful debugging information.
-
-            Open browser:
-
-            F12
-            → Console
-        */
-
         console.log(
-            "FRAGRANT MC server status:",
+            "API RESPONSE:",
             data
         );
 
@@ -438,6 +467,11 @@ async function updateServerInformation() {
         ================================================= */
 
         if (!data.online) {
+
+            console.log(
+                "Minecraft server reported OFFLINE."
+            );
+
 
             setServerStatus(
                 "Offline",
@@ -461,6 +495,11 @@ async function updateServerInformation() {
         /* =================================================
            SERVER ONLINE
         ================================================= */
+
+        console.log(
+            "Minecraft server reported ONLINE."
+        );
+
 
         setServerStatus(
             "Online",
@@ -491,24 +530,39 @@ async function updateServerInformation() {
 
         }
 
+
+        console.log(
+            `Players: ${onlinePlayers} / ${maxPlayers}`
+        );
+
+
     } catch (error) {
 
         /*
-            Log the actual error
-            for debugging.
+            Something prevented
+            the API request from completing.
         */
 
         console.error(
-            "Unable to retrieve FRAGRANT MC server status:",
+            "================================="
+        );
+
+        console.error(
+            "FRAGRANT MC STATUS ERROR:"
+        );
+
+        console.error(
             error
+        );
+
+        console.error(
+            "================================="
         );
 
 
         /*
-            API could not be reached.
-
-            This is different from
-            the Minecraft server being offline.
+            Do not call the server offline
+            when the API itself failed.
         */
 
         setServerStatus(
@@ -544,4 +598,4 @@ setInterval(
     updateServerInformation,
     SERVER_CONFIG.refreshInterval
 );
-```
+
