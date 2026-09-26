@@ -1,3 +1,4 @@
+```javascript
 /* =========================================================
    FRAGRANT MC
    Main JavaScript
@@ -16,10 +17,10 @@ const SERVER_CONFIG = {
     // Minecraft Bedrock server address
     bedrockIp: "play.fragrantmc.fun",
 
-    // Bedrock port
+    // Minecraft Bedrock port
     bedrockPort: "25751",
 
-    // How often the website checks the server
+    // Website status refresh interval
     // 60,000 milliseconds = 60 seconds
     refreshInterval: 60000
 
@@ -112,11 +113,15 @@ if (copyIpButton) {
 
 
             if (copyMessage) {
-                copyMessage.textContent = "IP COPIED!";
+
+                copyMessage.textContent =
+                    "IP COPIED!";
+
             }
 
 
-            copyIpButton.textContent = "COPIED!";
+            copyIpButton.textContent =
+                "COPIED!";
 
 
             setTimeout(() => {
@@ -124,8 +129,12 @@ if (copyIpButton) {
                 copyIpButton.textContent =
                     "COPY SERVER IP";
 
+
                 if (copyMessage) {
-                    copyMessage.textContent = "";
+
+                    copyMessage.textContent =
+                        "";
+
                 }
 
             }, 2000);
@@ -213,30 +222,38 @@ const heroStatusDot =
 function setServerStatus(status, online) {
 
     /*
-        status:
-        "Online"
-        "Offline"
-        "Checking..."
-        "Unavailable"
+        Possible statuses:
+
+        Online
+        Offline
+        Checking...
+        Unavailable
     */
 
 
+    /* MAIN STATUS */
+
     if (serverStatus) {
-        serverStatus.textContent = status;
+
+        serverStatus.textContent =
+            status;
+
     }
 
 
+    /* HERO STATUS TEXT */
+
     if (heroStatusText) {
+
         heroStatusText.textContent =
             status === "Checking..."
                 ? "Checking Server..."
                 : `Server ${status}`;
+
     }
 
 
-    /*
-        MAIN SERVER DOT
-    */
+    /* MAIN STATUS DOT */
 
     if (statusDot) {
 
@@ -248,9 +265,7 @@ function setServerStatus(status, online) {
     }
 
 
-    /*
-        HERO SERVER DOT
-    */
+    /* HERO STATUS DOT */
 
     if (heroStatusDot) {
 
@@ -262,9 +277,7 @@ function setServerStatus(status, online) {
     }
 
 
-    /*
-        HERO SERVER BADGE
-    */
+    /* HERO STATUS BADGE */
 
     if (heroServerStatus) {
 
@@ -284,6 +297,8 @@ function setServerStatus(status, online) {
 
 function updateServerDetails() {
 
+    /* JAVA IP */
+
     if (javaIp) {
 
         javaIp.textContent =
@@ -292,6 +307,8 @@ function updateServerDetails() {
     }
 
 
+    /* BEDROCK IP */
+
     if (bedrockIp) {
 
         bedrockIp.textContent =
@@ -299,6 +316,8 @@ function updateServerDetails() {
 
     }
 
+
+    /* BEDROCK PORT */
 
     if (bedrockPort) {
 
@@ -317,7 +336,8 @@ function updateServerDetails() {
 async function updateServerInformation() {
 
     /*
-        Show checking status while the request is running.
+        Show checking state
+        while the API request is running.
     */
 
     setServerStatus(
@@ -335,23 +355,22 @@ async function updateServerInformation() {
 
 
     /*
-        Keep IP information visible.
+        Always keep the server
+        connection information updated.
     */
 
     updateServerDetails();
 
 
     /*
-        mcsrvstat.us API
+        mcsrvstat.us Minecraft API
 
-        Java:
-        https://api.mcsrvstat.us/3/fragrantmc.xyz
+        The API checks:
 
-        The API returns:
+        play.fragrantmc.fun
 
-        online
-        players.online
-        players.max
+        It can resolve the Minecraft
+        SRV record automatically.
     */
 
     const apiUrl =
@@ -364,10 +383,24 @@ async function updateServerInformation() {
 
         const response =
             await fetch(apiUrl, {
+
                 method: "GET",
-                cache: "no-store"
+
+                cache: "no-store",
+
+                headers: {
+
+                    "Accept":
+                        "application/json"
+
+                }
+
             });
 
+
+        /*
+            Check HTTP response.
+        */
 
         if (!response.ok) {
 
@@ -378,9 +411,22 @@ async function updateServerInformation() {
         }
 
 
+        /*
+            Convert response to JSON.
+        */
+
         const data =
             await response.json();
 
+
+        /*
+            Useful debugging information.
+
+            Open browser:
+
+            F12
+            → Console
+        */
 
         console.log(
             "FRAGRANT MC server status:",
@@ -388,9 +434,9 @@ async function updateServerInformation() {
         );
 
 
-        /*
-            SERVER OFFLINE
-        */
+        /* =================================================
+           SERVER OFFLINE
+        ================================================= */
 
         if (!data.online) {
 
@@ -413,9 +459,9 @@ async function updateServerInformation() {
         }
 
 
-        /*
-            SERVER ONLINE
-        */
+        /* =================================================
+           SERVER ONLINE
+        ================================================= */
 
         setServerStatus(
             "Online",
@@ -423,9 +469,9 @@ async function updateServerInformation() {
         );
 
 
-        /*
-            PLAYER COUNT
-        */
+        /* =================================================
+           PLAYER COUNT
+        ================================================= */
 
         const onlinePlayers =
             Number(
@@ -446,8 +492,12 @@ async function updateServerInformation() {
 
         }
 
-
     } catch (error) {
+
+        /*
+            Log the actual error
+            for debugging.
+        */
 
         console.error(
             "Unable to retrieve FRAGRANT MC server status:",
@@ -456,11 +506,10 @@ async function updateServerInformation() {
 
 
         /*
-            If the API itself cannot be reached,
-            don't falsely say the Minecraft server
-            is offline.
+            API could not be reached.
 
-            Use "Unavailable" instead.
+            This is different from
+            the Minecraft server being offline.
         */
 
         setServerStatus(
@@ -482,17 +531,5 @@ async function updateServerInformation() {
 
 
 /* =========================================================
-   INITIAL SERVER STATUS CHECK
-========================================================= */
-
-updateServerInformation();
-
-
-/* =========================================================
-   AUTOMATIC SERVER STATUS REFRESH
-========================================================= */
-
-setInterval(
-    updateServerInformation,
-    SERVER_CONFIG.refreshInterval
-);
+   INITIAL SERVER STATU
+```
