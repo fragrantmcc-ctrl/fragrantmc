@@ -1,184 +1,19 @@
 /* =========================================================
-   FRAGRANT MC
-   Main JavaScript
-========================================================= */
-
-
-/* =========================================================
-   SERVER CONFIGURATION
+   FRAGRANT MC SERVER STATUS
+   Uses the same mcstatus.io method as the Discord bot
 ========================================================= */
 
 const SERVER_CONFIG = {
+    serverAddress: "play.fragrantmc.fun",
+    javaPort: 25751,
+    bedrockPort: 25751,
 
-    // Minecraft Java server address
-    javaIp: "play.fragrantmc.fun",
-
-    // Minecraft Bedrock server address
-    bedrockIp: "play.fragrantmc.fun",
-
-    // Minecraft Bedrock port
-    bedrockPort: "25751",
-
-    // Status refresh interval
-    // 60 seconds
-    refreshInterval: 60000
-
+    refreshInterval: 10000
 };
 
 
 /* =========================================================
-   MOBILE NAVIGATION
-========================================================= */
-
-const mobileMenuButton =
-    document.getElementById("mobileMenuButton");
-
-const navLinks =
-    document.getElementById("navLinks");
-
-
-if (mobileMenuButton && navLinks) {
-
-    mobileMenuButton.addEventListener("click", () => {
-
-        const isOpen =
-            navLinks.classList.toggle("active");
-
-        mobileMenuButton.setAttribute(
-            "aria-expanded",
-            String(isOpen)
-        );
-
-        mobileMenuButton.setAttribute(
-            "aria-label",
-            isOpen
-                ? "Close navigation menu"
-                : "Open navigation menu"
-        );
-
-    });
-
-
-    const navigationLinks =
-        navLinks.querySelectorAll("a");
-
-
-    navigationLinks.forEach((link) => {
-
-        link.addEventListener("click", () => {
-
-            navLinks.classList.remove("active");
-
-            mobileMenuButton.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-            mobileMenuButton.setAttribute(
-                "aria-label",
-                "Open navigation menu"
-            );
-
-        });
-
-    });
-
-}
-
-
-/* =========================================================
-   COPY SERVER IP
-========================================================= */
-
-const copyIpButton =
-    document.getElementById("copyIpButton");
-
-const copyMessage =
-    document.getElementById("copyMessage");
-
-
-if (copyIpButton) {
-
-    copyIpButton.addEventListener("click", async () => {
-
-        const ip =
-            copyIpButton.dataset.copyIp ||
-            SERVER_CONFIG.javaIp;
-
-
-        try {
-
-            await navigator.clipboard.writeText(ip);
-
-
-            if (copyMessage) {
-
-                copyMessage.textContent =
-                    "IP COPIED!";
-
-            }
-
-
-            copyIpButton.textContent =
-                "COPIED!";
-
-
-            setTimeout(() => {
-
-                copyIpButton.textContent =
-                    "COPY SERVER IP";
-
-
-                if (copyMessage) {
-
-                    copyMessage.textContent =
-                        "";
-
-                }
-
-            }, 2000);
-
-
-        } catch (error) {
-
-            console.error(
-                "Unable to copy server IP:",
-                error
-            );
-
-
-            if (copyMessage) {
-
-                copyMessage.textContent =
-                    `Copy failed — ${ip}`;
-
-            }
-
-        }
-
-    });
-
-}
-
-
-/* =========================================================
-   CURRENT YEAR
-========================================================= */
-
-const currentYear =
-    document.getElementById("currentYear");
-
-
-if (currentYear) {
-
-    currentYear.textContent =
-        new Date().getFullYear();
-
-}
-
-
-/* =========================================================
-   SERVER INFORMATION ELEMENTS
+   SERVER STATUS ELEMENTS
 ========================================================= */
 
 const serverStatus =
@@ -196,13 +31,8 @@ const bedrockIp =
 const bedrockPort =
     document.getElementById("bedrockPort");
 
-const statusDot =
+const serverStatusDot =
     document.getElementById("serverStatusDot");
-
-
-/* =========================================================
-   HERO SERVER STATUS ELEMENTS
-========================================================= */
 
 const heroServerStatus =
     document.getElementById("heroServerStatus");
@@ -215,32 +45,39 @@ const heroStatusDot =
 
 
 /* =========================================================
-   UPDATE SERVER STATUS UI
+   UPDATE SERVER DETAILS
+========================================================= */
+
+function updateServerDetails() {
+
+    if (javaIp) {
+        javaIp.textContent =
+            SERVER_CONFIG.serverAddress;
+    }
+
+    if (bedrockIp) {
+        bedrockIp.textContent =
+            SERVER_CONFIG.serverAddress;
+    }
+
+    if (bedrockPort) {
+        bedrockPort.textContent =
+            SERVER_CONFIG.bedrockPort;
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE STATUS UI
 ========================================================= */
 
 function setServerStatus(status, online) {
 
-    /*
-        Possible statuses:
-
-        Online
-        Offline
-        Checking...
-        Unavailable
-    */
-
-
-    /* MAIN STATUS */
-
     if (serverStatus) {
-
-        serverStatus.textContent =
-            status;
-
+        serverStatus.textContent = status;
     }
 
-
-    /* HERO STATUS TEXT */
 
     if (heroStatusText) {
 
@@ -252,19 +89,15 @@ function setServerStatus(status, online) {
     }
 
 
-    /* MAIN STATUS DOT */
+    if (serverStatusDot) {
 
-    if (statusDot) {
-
-        statusDot.classList.toggle(
+        serverStatusDot.classList.toggle(
             "offline",
             !online
         );
 
     }
 
-
-    /* HERO STATUS DOT */
 
     if (heroStatusDot) {
 
@@ -275,8 +108,6 @@ function setServerStatus(status, online) {
 
     }
 
-
-    /* HERO STATUS BADGE */
 
     if (heroServerStatus) {
 
@@ -291,291 +122,151 @@ function setServerStatus(status, online) {
 
 
 /* =========================================================
-   UPDATE SERVER DETAILS
-========================================================= */
-
-function updateServerDetails() {
-
-    /* JAVA */
-
-    if (javaIp) {
-
-        javaIp.textContent =
-            SERVER_CONFIG.javaIp;
-
-    }
-
-
-    /* BEDROCK */
-
-    if (bedrockIp) {
-
-        bedrockIp.textContent =
-            SERVER_CONFIG.bedrockIp;
-
-    }
-
-
-    /* BEDROCK PORT */
-
-    if (bedrockPort) {
-
-        bedrockPort.textContent =
-            SERVER_CONFIG.bedrockPort;
-
-    }
-
-}
-
-
-/* =========================================================
-   GET MINECRAFT SERVER STATUS
+   CHECK SERVER STATUS
 ========================================================= */
 
 async function updateServerInformation() {
 
-    /*
-        Show checking while
-        the request is running.
-    */
+    updateServerDetails();
 
     setServerStatus(
         "Checking...",
         false
     );
 
-
     if (playerCount) {
-
         playerCount.textContent =
             "Checking...";
-
     }
-
-
-    /*
-        Update displayed IP information.
-    */
-
-    updateServerDetails();
-
-
-    /*
-        Minecraft server hostname.
-    */
-
-    const serverAddress =
-        SERVER_CONFIG.javaIp;
-
-
-    /*
-        mcsrvstat.us API.
-
-        The API will attempt to resolve
-        the Minecraft SRV record for:
-
-        play.fragrantmc.fun
-    */
-
-    const apiUrl =
-        `https://api.mcsrvstat.us/3/${encodeURIComponent(
-            serverAddress
-        )}`;
-
-
-    console.log(
-        "================================="
-    );
-
-    console.log(
-        "FRAGRANT MC STATUS CHECK"
-    );
-
-    console.log(
-        "Server:",
-        serverAddress
-    );
-
-    console.log(
-        "API:",
-        apiUrl
-    );
-
-    console.log(
-        "================================="
-    );
 
 
     try {
 
         /*
-            Request server status.
-        */
+         * SAME METHOD AS YOUR DISCORD BOT
+         */
 
-        const response =
-            await fetch(apiUrl, {
-
-                method: "GET",
-
-                cache: "no-store",
-
-                headers: {
-
-                    "Accept":
-                        "application/json"
-
-                }
-
-            });
+        const url =
+            `https://api.mcstatus.io/v2/status/java/${encodeURIComponent(
+                SERVER_CONFIG.serverAddress
+            )}:${SERVER_CONFIG.javaPort}`;
 
 
         console.log(
-            "API HTTP status:",
-            response.status
+            "Checking:",
+            url
         );
 
 
-        /*
-            Check HTTP status.
-        */
+        const response =
+            await fetch(url, {
+                cache: "no-store"
+            });
+
 
         if (!response.ok) {
-
             throw new Error(
                 `HTTP ${response.status}`
             );
-
         }
 
 
-        /*
-            Read JSON response.
-        */
-
-        const data =
+        const server =
             await response.json();
 
 
         console.log(
-            "API RESPONSE:",
-            data
+            "Minecraft server response:",
+            server
         );
 
 
+        /*
+         * SAME LOGIC AS DISCORD BOT
+         */
+
+        const isOnline =
+            server.online === true;
+
+
         /* =================================================
-           SERVER OFFLINE
+           ONLINE
         ================================================= */
 
-        if (!data.online) {
-
-            console.log(
-                "Minecraft server reported OFFLINE."
-            );
-
+        if (isOnline) {
 
             setServerStatus(
-                "Offline",
-                false
+                "Online",
+                true
             );
+
+
+            const onlinePlayers =
+                server.players?.online ?? 0;
+
+            const maxPlayers =
+                server.players?.max ?? 0;
 
 
             if (playerCount) {
 
                 playerCount.textContent =
-                    "0 / 0";
+                    `${onlinePlayers} / ${maxPlayers}`;
 
             }
 
 
+            console.log(
+                `FRAGRANT MC ONLINE — ${onlinePlayers}/${maxPlayers}`
+            );
+
             return;
-
         }
 
 
         /* =================================================
-           SERVER ONLINE
+           OFFLINE
         ================================================= */
 
-        console.log(
-            "Minecraft server reported ONLINE."
-        );
-
-
         setServerStatus(
-            "Online",
-            true
-        );
-
-
-        /* =================================================
-           PLAYER COUNT
-        ================================================= */
-
-        const onlinePlayers =
-            Number(
-                data.players?.online ?? 0
-            );
-
-
-        const maxPlayers =
-            Number(
-                data.players?.max ?? 0
-            );
-
-
-        if (playerCount) {
-
-            playerCount.textContent =
-                `${onlinePlayers} / ${maxPlayers}`;
-
-        }
-
-
-        console.log(
-            `Players: ${onlinePlayers} / ${maxPlayers}`
-        );
-
-
-    } catch (error) {
-
-        /*
-            Something prevented
-            the API request from completing.
-        */
-
-        console.error(
-            "================================="
-        );
-
-        console.error(
-            "FRAGRANT MC STATUS ERROR:"
-        );
-
-        console.error(
-            error
-        );
-
-        console.error(
-            "================================="
-        );
-
-
-        /*
-            Do not call the server offline
-            when the API itself failed.
-        */
-
-        setServerStatus(
-            "Unavailable",
+            "Offline",
             false
         );
 
 
         if (playerCount) {
-
             playerCount.textContent =
-                "— / —";
+                "0 / 0";
+        }
 
+
+        console.log(
+            "FRAGRANT MC OFFLINE"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Server status check failed:",
+            error
+        );
+
+
+        /*
+         * If the API cannot be reached,
+         * NEVER incorrectly display Online.
+         */
+
+        setServerStatus(
+            "Offline",
+            false
+        );
+
+
+        if (playerCount) {
+            playerCount.textContent =
+                "0 / 0";
         }
 
     }
@@ -584,18 +275,17 @@ async function updateServerInformation() {
 
 
 /* =========================================================
-   INITIAL SERVER STATUS CHECK
+   INITIAL CHECK
 ========================================================= */
 
 updateServerInformation();
 
 
 /* =========================================================
-   AUTOMATIC SERVER STATUS REFRESH
+   AUTO REFRESH
 ========================================================= */
 
 setInterval(
     updateServerInformation,
     SERVER_CONFIG.refreshInterval
 );
-
