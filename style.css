@@ -1,1489 +1,377 @@
 /* =========================================================
-   FRAGRANT MC — PREMIUM NATURE STYLE
-   ========================================================= */
+   FRAGRANT MC SERVER STATUS
+   Uses the same mcstatus.io method as the Discord bot
+========================================================= */
 
-:root {
-    --bg: #07100d;
-    --bg-soft: #0b1712;
-    --surface: rgba(16, 29, 23, 0.68);
-    --surface-strong: rgba(18, 35, 27, 0.88);
+const SERVER_CONFIG = {
+    serverAddress: "play.fragrantmc.fun",
+    javaPort: 25751,
+    bedrockPort: 25751,
 
-    --green: #7cffb2;
-    --green-soft: #43e58b;
-    --green-dark: #1d8f55;
-
-    --text: #f2fff7;
-    --text-soft: #a8b8af;
-    --text-muted: #718078;
-
-    --border: rgba(124, 255, 178, 0.13);
-    --border-hover: rgba(124, 255, 178, 0.3);
-
-    --shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
-    --glow: 0 0 45px rgba(124, 255, 178, 0.12);
-
-    --header-height: 78px;
-    --radius: 22px;
-
-    --max-width: 1180px;
-}
+    refreshInterval: 10000
+};
 
 
 /* =========================================================
-   RESET
-   ========================================================= */
+   SERVER STATUS ELEMENTS
+========================================================= */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+const serverStatus =
+    document.getElementById("serverStatus");
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 100px;
-}
+const playerCount =
+    document.getElementById("playerCount");
 
-body {
-    min-width: 320px;
-    background:
-        radial-gradient(
-            circle at 50% -10%,
-            rgba(67, 229, 139, 0.08),
-            transparent 35%
-        ),
-        var(--bg);
-    color: var(--text);
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
+const javaIp =
+    document.getElementById("javaIp");
 
-img {
-    max-width: 100%;
-    display: block;
-}
+const bedrockIp =
+    document.getElementById("bedrockIp");
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+const bedrockPort =
+    document.getElementById("bedrockPort");
 
-button {
-    font: inherit;
-}
+const serverStatusDot =
+    document.getElementById("serverStatusDot");
 
-section[id] {
-    scroll-margin-top: 100px;
-}
+const heroServerStatus =
+    document.getElementById("heroServerStatus");
+
+const heroStatusText =
+    document.getElementById("heroStatusText");
+
+const heroStatusDot =
+    document.getElementById("heroStatusDot");
 
 
 /* =========================================================
-   BACKGROUND ATMOSPHERE
-   ========================================================= */
+   UPDATE SERVER DETAILS
+========================================================= */
 
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: -2;
+function updateServerDetails() {
 
-    background:
-        radial-gradient(
-            circle at 10% 30%,
-            rgba(67, 229, 139, 0.035),
-            transparent 25%
-        ),
-        radial-gradient(
-            circle at 90% 70%,
-            rgba(124, 255, 178, 0.025),
-            transparent 30%
-        );
-}
-
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 999;
-
-    background: linear-gradient(
-        90deg,
-        rgba(124, 255, 178, 0.02),
-        transparent 30%,
-        transparent 70%,
-        rgba(124, 255, 178, 0.02)
-    );
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    z-index: 1000;
-
-    background: rgba(5, 13, 10, 0.72);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    transition:
-        background 0.3s ease,
-        border-color 0.3s ease;
-}
-
-.navbar {
-    width: min(var(--max-width), calc(100% - 40px));
-    height: 100%;
-    margin: auto;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-}
-
-
-/* =========================================================
-   BRAND
-   ========================================================= */
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-
-    flex-shrink: 0;
-}
-
-.brand-mark {
-    width: 34px;
-    height: 34px;
-
-    display: grid;
-    place-items: center;
-
-    border: 1px solid rgba(124, 255, 178, 0.3);
-    border-radius: 10px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124, 255, 178, 0.16),
-            rgba(124, 255, 178, 0.035)
-        );
-
-    color: var(--green);
-
-    box-shadow:
-        inset 0 0 18px rgba(124, 255, 178, 0.06),
-        0 0 22px rgba(124, 255, 178, 0.07);
-}
-
-.brand-name {
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-
-    margin-left: auto;
-}
-
-.nav-links a {
-    position: relative;
-
-    padding: 9px 13px;
-
-    color: var(--text-soft);
-    font-size: 13px;
-    font-weight: 600;
-
-    border-radius: 10px;
-
-    transition:
-        color 0.25s ease,
-        background 0.25s ease,
-        transform 0.25s ease;
-}
-
-.nav-links a::after {
-    content: "";
-
-    position: absolute;
-    left: 50%;
-    bottom: 3px;
-
-    width: 0;
-    height: 2px;
-
-    border-radius: 10px;
-    background: var(--green);
-
-    transform: translateX(-50%);
-    box-shadow: 0 0 10px rgba(124, 255, 178, 0.7);
-
-    transition: width 0.25s ease;
-}
-
-.nav-links a:hover {
-    color: var(--text);
-    background: rgba(124, 255, 178, 0.055);
-}
-
-.nav-links a:hover::after {
-    width: 18px;
-}
-
-
-/* =========================================================
-   MOBILE MENU BUTTON
-   ========================================================= */
-
-#mobileMenuButton {
-    display: none;
-
-    width: 42px;
-    height: 42px;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-
-    background: rgba(255, 255, 255, 0.035);
-    color: var(--text);
-
-    cursor: pointer;
-}
-
-
-/* =========================================================
-   GENERAL BUTTONS
-   ========================================================= */
-
-.hero-buttons,
-.community-buttons,
-.final-cta-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-}
-
-.button,
-.btn,
-.hero-buttons a,
-.community-buttons a,
-.final-cta a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-
-    min-height: 48px;
-    padding: 0 21px;
-
-    border: 1px solid rgba(124, 255, 178, 0.18);
-    border-radius: 13px;
-
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-
-    transition:
-        transform 0.25s ease,
-        border-color 0.25s ease,
-        background 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.hero-buttons a:first-child,
-.community-buttons a:first-child,
-.final-cta a:first-child {
-    background: var(--green);
-    color: #06110b;
-
-    border-color: var(--green);
-
-    box-shadow:
-        0 0 25px rgba(124, 255, 178, 0.14),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.08);
-}
-
-.hero-buttons a:first-child:hover,
-.community-buttons a:first-child:hover,
-.final-cta a:first-child:hover {
-    transform: translateY(-3px);
-
-    box-shadow:
-        0 10px 35px rgba(124, 255, 178, 0.18),
-        0 0 35px rgba(124, 255, 178, 0.14);
-}
-
-.hero-buttons a:not(:first-child),
-.community-buttons a:not(:first-child),
-.final-cta a:not(:first-child) {
-    background: rgba(255, 255, 255, 0.035);
-    color: var(--text);
-}
-
-.hero-buttons a:not(:first-child):hover,
-.community-buttons a:not(:first-child):hover,
-.final-cta a:not(:first-child):hover {
-    transform: translateY(-3px);
-
-    border-color: var(--border-hover);
-    background: rgba(124, 255, 178, 0.065);
-
-    box-shadow: var(--glow);
-}
-
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.hero {
-    position: relative;
-    min-height: 100svh;
-
-    display: flex;
-    align-items: center;
-
-    padding: calc(var(--header-height) + 70px) 20px 80px;
-
-    overflow: hidden;
-}
-
-.hero-background {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-
-    background:
-        radial-gradient(
-            circle at 70% 35%,
-            rgba(67, 229, 139, 0.12),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 20% 70%,
-            rgba(124, 255, 178, 0.05),
-            transparent 28%
-        ),
-        linear-gradient(
-            135deg,
-            #07100d 0%,
-            #08130f 50%,
-            #050b08 100%
-        );
-}
-
-.hero-background::before {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(7, 16, 13, 0.98) 0%,
-            rgba(7, 16, 13, 0.78) 42%,
-            rgba(7, 16, 13, 0.4) 100%
-        );
-}
-
-.hero-background::after {
-    content: "";
-
-    position: absolute;
-    width: 650px;
-    height: 650px;
-
-    right: -220px;
-    top: 10%;
-
-    border-radius: 50%;
-
-    background: rgba(67, 229, 139, 0.05);
-
-    filter: blur(90px);
-}
-
-.hero-container {
-    width: min(var(--max-width), 100%);
-    margin: auto;
-
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-    align-items: center;
-    gap: 70px;
-}
-
-.hero-content {
-    max-width: 720px;
-}
-
-.server-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-
-    margin-bottom: 20px;
-    padding: 7px 11px;
-
-    border: 1px solid var(--border);
-    border-radius: 999px;
-
-    background: rgba(124, 255, 178, 0.045);
-
-    color: var(--text-soft);
-
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-
-    backdrop-filter: blur(10px);
-}
-
-.online-dot {
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-
-    background: var(--green);
-
-    box-shadow:
-        0 0 8px var(--green),
-        0 0 18px rgba(124, 255, 178, 0.5);
-
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
+    if (javaIp) {
+        javaIp.textContent =
+            SERVER_CONFIG.serverAddress;
     }
 
-    50% {
-        opacity: 0.55;
-        transform: scale(0.8);
+    if (bedrockIp) {
+        bedrockIp.textContent =
+            SERVER_CONFIG.serverAddress;
     }
-}
 
-.hero-label {
-    margin-bottom: 10px;
+    if (bedrockPort) {
+        bedrockPort.textContent =
+            SERVER_CONFIG.bedrockPort;
+    }
 
-    color: var(--green);
-
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-}
-
-.hero h1 {
-    max-width: 800px;
-
-    font-size: clamp(52px, 8vw, 92px);
-    line-height: 0.95;
-    letter-spacing: -0.055em;
-
-    margin-bottom: 20px;
-}
-
-.hero-tagline {
-    margin-bottom: 15px;
-
-    color: var(--text);
-    font-size: clamp(20px, 3vw, 29px);
-    font-weight: 600;
-    letter-spacing: -0.025em;
-}
-
-.hero-description {
-    max-width: 590px;
-    margin-bottom: 30px;
-
-    color: var(--text-soft);
-    font-size: 15px;
-    line-height: 1.8;
-}
-
-.hero-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    margin-top: 25px;
-}
-
-.hero-stats > * {
-    padding: 8px 12px;
-
-    border: 1px solid var(--border);
-    border-radius: 9px;
-
-    background: rgba(255, 255, 255, 0.025);
-
-    color: var(--text-muted);
-
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.hero-logo {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 380px;
-
-    border: 1px solid var(--border);
-    border-radius: 30px;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(124, 255, 178, 0.07),
-            transparent 62%
-        ),
-        rgba(255, 255, 255, 0.018);
-
-    box-shadow:
-        var(--shadow),
-        inset 0 0 80px rgba(124, 255, 178, 0.025);
-
-    backdrop-filter: blur(12px);
-}
-
-.hero-logo::before {
-    content: "";
-
-    position: absolute;
-    inset: 15px;
-
-    border: 1px solid rgba(124, 255, 178, 0.055);
-    border-radius: 22px;
-
-    pointer-events: none;
-}
-
-.hero-logo img {
-    position: relative;
-    z-index: 2;
-
-    width: min(260px, 65%);
-
-    filter:
-        drop-shadow(0 0 25px rgba(124, 255, 178, 0.18));
-}
-
-.scroll-down {
-    position: absolute;
-
-    bottom: 25px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    color: var(--text-muted);
-
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-
-    opacity: 0.7;
 }
 
 
 /* =========================================================
-   GENERAL SECTIONS
-   ========================================================= */
+   UPDATE STATUS UI
+========================================================= */
 
-.section {
-    position: relative;
+function setServerStatus(status, online) {
 
-    width: min(var(--max-width), calc(100% - 40px));
-    margin: auto;
+    if (serverStatus) {
+        serverStatus.textContent = status;
+    }
 
-    padding: 120px 0;
+    if (heroStatusText) {
+
+        heroStatusText.textContent =
+            status === "Checking..."
+                ? "Checking Server..."
+                : `Server ${status}`;
+
+    }
+
+    if (serverStatusDot) {
+
+        serverStatusDot.classList.toggle(
+            "offline",
+            !online
+        );
+
+    }
+
+    if (heroStatusDot) {
+
+        heroStatusDot.classList.toggle(
+            "offline",
+            !online
+        );
+
+    }
+
+    if (heroServerStatus) {
+
+        heroServerStatus.classList.toggle(
+            "offline",
+            !online
+        );
+
+    }
+
 }
 
-.section::before {
-    content: "";
 
-    position: absolute;
-    top: 0;
-    left: 50%;
+/* =========================================================
+   CHECK SERVER STATUS
+========================================================= */
 
-    width: min(700px, 80%);
-    height: 1px;
+async function updateServerInformation() {
 
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(124, 255, 178, 0.14),
-        transparent
+    updateServerDetails();
+
+    setServerStatus(
+        "Checking...",
+        false
     );
 
-    transform: translateX(-50%);
-}
+    if (playerCount) {
+        playerCount.textContent =
+            "Checking...";
+    }
 
-.section-heading {
-    max-width: 680px;
-    margin-bottom: 50px;
-}
+    try {
 
-.section-heading .eyebrow {
-    margin-bottom: 12px;
+        const url =
+            `https://api.mcstatus.io/v2/status/java/${encodeURIComponent(
+                SERVER_CONFIG.serverAddress
+            )}:${SERVER_CONFIG.javaPort}`;
 
-    color: var(--green);
-
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-}
-
-.section-heading h2 {
-    margin-bottom: 15px;
-
-    font-size: clamp(34px, 5vw, 57px);
-    line-height: 1;
-    letter-spacing: -0.045em;
-}
-
-.section-heading p {
-    max-width: 620px;
-
-    color: var(--text-soft);
-    font-size: 15px;
-    line-height: 1.8;
-}
-
-
-/* =========================================================
-   ABOUT
-   ========================================================= */
-
-.about-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 70px;
-    align-items: center;
-}
-
-.about-content p {
-    color: var(--text-soft);
-    line-height: 1.9;
-}
-
-
-/* =========================================================
-   FEATURES
-   ========================================================= */
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.feature-card {
-    position: relative;
-
-    min-height: 190px;
-    padding: 28px;
-
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124, 255, 178, 0.045),
-            rgba(255, 255, 255, 0.015)
+        console.log(
+            "Checking:",
+            url
         );
 
-    overflow: hidden;
+        const response =
+            await fetch(url, {
+                cache: "no-store"
+            });
 
-    transition:
-        transform 0.3s ease,
-        border-color 0.3s ease,
-        background 0.3s ease,
-        box-shadow 0.3s ease;
-}
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
 
-.feature-card::before {
-    content: "";
+        const server =
+            await response.json();
 
-    position: absolute;
-
-    width: 150px;
-    height: 150px;
-
-    right: -80px;
-    bottom: -80px;
-
-    border-radius: 50%;
-
-    background: rgba(124, 255, 178, 0.08);
-
-    filter: blur(25px);
-}
-
-.feature-card:hover {
-    transform: translateY(-6px);
-
-    border-color: var(--border-hover);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124, 255, 178, 0.075),
-            rgba(255, 255, 255, 0.02)
+        console.log(
+            "Minecraft server response:",
+            server
         );
 
-    box-shadow: var(--glow);
-}
-
-.feature-card .icon {
-    margin-bottom: 22px;
-
-    font-size: 25px;
-}
-
-.feature-card h3 {
-    margin-bottom: 9px;
-
-    font-size: 17px;
-}
-
-.feature-card p {
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1.7;
-}
+        const isOnline =
+            server.online === true;
 
 
-/* =========================================================
-   WORLD
-   ========================================================= */
+        /* =================================================
+           ONLINE
+        ================================================= */
 
-.world-section {
-    position: relative;
-    min-height: 560px;
+        if (isOnline) {
 
-    display: flex;
-    align-items: center;
+            setServerStatus(
+                "Online",
+                true
+            );
 
-    margin: 60px 0;
+            const onlinePlayers =
+                server.players?.online ?? 0;
 
-    overflow: hidden;
+            const maxPlayers =
+                server.players?.max ?? 0;
 
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-}
+            if (playerCount) {
 
-.world-background {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
+                playerCount.textContent =
+                    `${onlinePlayers} / ${maxPlayers}`;
 
-    background:
-        radial-gradient(
-            circle at 70% 50%,
-            rgba(67, 229, 139, 0.09),
-            transparent 35%
-        ),
-        linear-gradient(
-            90deg,
-            #07100d 0%,
-            rgba(7, 16, 13, 0.86) 45%,
-            #07100d 100%
-        );
-}
+            }
 
-.world-background::after {
-    content: "";
+            console.log(
+                `FRAGRANT MC ONLINE — ${onlinePlayers}/${maxPlayers}`
+            );
 
-    position: absolute;
-    inset: 0;
-
-    background:
-        repeating-linear-gradient(
-            135deg,
-            transparent 0,
-            transparent 80px,
-            rgba(124, 255, 178, 0.018) 81px,
-            transparent 82px
-        );
-}
-
-.world-content {
-    width: min(var(--max-width), calc(100% - 40px));
-    margin: auto;
-}
-
-.world-content h2 {
-    max-width: 700px;
-
-    margin-bottom: 20px;
-
-    font-size: clamp(42px, 7vw, 76px);
-    line-height: 0.98;
-    letter-spacing: -0.055em;
-}
-
-.world-content p {
-    max-width: 560px;
-    margin-bottom: 28px;
-
-    color: var(--text-soft);
-    line-height: 1.8;
-}
+            return;
+        }
 
 
-/* =========================================================
-   SERVER SECTION
-   ========================================================= */
+        /* =================================================
+           OFFLINE
+        ================================================= */
 
-.server-section {
-    text-align: center;
-}
-
-.server-panel {
-    width: min(900px, 100%);
-    margin: auto;
-
-    padding: 32px;
-
-    border: 1px solid var(--border);
-    border-radius: 25px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124, 255, 178, 0.055),
-            rgba(255, 255, 255, 0.015)
+        setServerStatus(
+            "Offline",
+            false
         );
 
-    box-shadow: var(--shadow);
+        if (playerCount) {
+            playerCount.textContent =
+                "0 / 0";
+        }
 
-    text-align: left;
-}
+        console.log(
+            "FRAGRANT MC OFFLINE"
+        );
 
-.server-status {
-    display: flex;
-    align-items: center;
-    gap: 9px;
+    } catch (error) {
 
-    margin-bottom: 25px;
+        console.error(
+            "Server status check failed:",
+            error
+        );
 
-    color: var(--green);
+        setServerStatus(
+            "Offline",
+            false
+        );
 
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-}
+        if (playerCount) {
+            playerCount.textContent =
+                "0 / 0";
+        }
 
-#serverStatusDot {
-    width: 8px;
-    height: 8px;
+    }
 
-    border-radius: 50%;
-    background: var(--green);
-
-    box-shadow: 0 0 14px rgba(124, 255, 178, 0.7);
-}
-
-.server-info {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.server-info > div {
-    padding: 17px;
-
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 14px;
-
-    background: rgba(0, 0, 0, 0.12);
-}
-
-.server-info span {
-    display: block;
-
-    margin-bottom: 5px;
-
-    color: var(--text-muted);
-
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.server-info strong {
-    color: var(--text);
-    font-size: 14px;
-}
-
-#copyIpButton {
-    margin-top: 18px;
-
-    width: 100%;
-    min-height: 46px;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-
-    background: rgba(124, 255, 178, 0.07);
-    color: var(--green);
-
-    font-weight: 800;
-
-    cursor: pointer;
-
-    transition:
-        background 0.25s ease,
-        transform 0.25s ease;
-}
-
-#copyIpButton:hover {
-    background: rgba(124, 255, 178, 0.12);
-    transform: translateY(-2px);
-}
-
-#copyMessage {
-    min-height: 20px;
-
-    margin-top: 10px;
-
-    color: var(--green);
-
-    font-size: 12px;
-    text-align: center;
 }
 
 
 /* =========================================================
-   COMMUNITY
-   ========================================================= */
+   INITIAL SERVER CHECK
+========================================================= */
 
-.community {
-    text-align: center;
-}
-
-.community .section-heading {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.community-buttons {
-    justify-content: center;
-}
+updateServerInformation();
 
 
 /* =========================================================
-   STAFF
-   ========================================================= */
+   AUTO REFRESH
+========================================================= */
 
-.staff {
-    margin-top: 65px;
-}
-
-.staff-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-
-.staff-card {
-    padding: 22px;
-
-    border: 1px solid var(--border);
-    border-radius: 18px;
-
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.staff-card .role {
-    margin-bottom: 5px;
-
-    color: var(--green);
-
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.staff-card .name {
-    font-size: 15px;
-    font-weight: 700;
-}
+setInterval(
+    updateServerInformation,
+    SERVER_CONFIG.refreshInterval
+);
 
 
 /* =========================================================
-   FINAL CTA
-   ========================================================= */
+   MOBILE HAMBURGER MENU
+========================================================= */
 
-.final-cta {
-    position: relative;
+const mobileMenuButton =
+    document.getElementById("mobileMenuButton");
 
-    width: min(1000px, calc(100% - 40px));
-    margin: 80px auto;
+const navLinks =
+    document.getElementById("navLinks");
 
-    padding: 75px 35px;
 
-    border: 1px solid var(--border);
-    border-radius: 30px;
+if (mobileMenuButton && navLinks) {
 
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(124, 255, 178, 0.09),
-            transparent 55%
-        ),
-        rgba(255, 255, 255, 0.02);
+    mobileMenuButton.addEventListener(
+        "click",
+        function () {
 
-    text-align: center;
+            const isOpen =
+                navLinks.classList.toggle("active");
 
-    overflow: hidden;
+
+            mobileMenuButton.textContent =
+                isOpen ? "✕" : "☰";
+
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+
+
+            mobileMenuButton.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE MENU AFTER CLICKING A LINK
+    ===================================================== */
+
+    navLinks
+        .querySelectorAll("a")
+        .forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    navLinks.classList.remove("active");
+
+                    mobileMenuButton.textContent =
+                        "☰";
+
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    mobileMenuButton.setAttribute(
+                        "aria-label",
+                        "Open navigation menu"
+                    );
+
+                }
+            );
+
+        });
+
 }
-
-.final-cta::before {
-    content: "";
-
-    position: absolute;
-
-    width: 300px;
-    height: 300px;
-
-    left: 50%;
-    top: -220px;
-
-    transform: translateX(-50%);
-
-    border-radius: 50%;
-
-    background: rgba(124, 255, 178, 0.08);
-
-    filter: blur(50px);
-}
-
-.final-cta h2 {
-    position: relative;
-
-    margin-bottom: 15px;
-
-    font-size: clamp(38px, 6vw, 64px);
-    line-height: 1;
-
-    letter-spacing: -0.05em;
-}
-
-.final-cta p {
-    position: relative;
-
-    margin-bottom: 28px;
-
-    color: var(--text-soft);
-}
-
-.final-cta-buttons {
-    position: relative;
-    justify-content: center;
-}
-
 
 /* =========================================================
-   FOOTER
-   ========================================================= */
+   SCROLL REVEAL EFFECTS
+========================================================= */
 
-footer {
-    width: min(var(--max-width), calc(100% - 40px));
+const revealElements =
+    document.querySelectorAll(
+        ".reveal, .reveal-card"
+    );
 
-    margin: auto;
-    padding: 35px 0 45px;
 
-    border-top: 1px solid rgba(255, 255, 255, 0.055);
+const revealObserver =
+    new IntersectionObserver(
+        function (entries) {
 
-    color: var(--text-muted);
+            entries.forEach(function (entry) {
 
-    font-size: 12px;
-}
+                if (entry.isIntersecting) {
 
-.footer-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
+                    entry.target.classList.add("show");
 
-footer strong {
-    color: var(--text);
-}
+                    revealObserver.unobserve(
+                        entry.target
+                    );
 
+                }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+            });
 
-@media (max-width: 950px) {
+        },
+        {
+            threshold: 0.12
+        }
+    );
 
-    .hero-container {
-        grid-template-columns: 1fr;
-        gap: 45px;
-    }
 
-    .hero-content {
-        max-width: 760px;
-    }
+revealElements.forEach(function (element) {
 
-    .hero-logo {
-        min-height: 300px;
-        width: min(600px, 100%);
-    }
+    revealObserver.observe(element);
 
-    .feature-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-
-    .staff-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-
-/* =========================================================
-   MOBILE NAV
-   ========================================================= */
-
-@media (max-width: 760px) {
-
-    :root {
-        --header-height: 68px;
-    }
-
-    .navbar {
-        width: calc(100% - 28px);
-    }
-
-    #mobileMenuButton {
-        display: grid;
-        place-items: center;
-    }
-
-    .nav-links {
-        position: absolute;
-
-        top: calc(100% + 8px);
-        left: 14px;
-        right: 14px;
-
-        display: none;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 4px;
-
-        padding: 10px;
-
-        border: 1px solid var(--border);
-        border-radius: 18px;
-
-        background: rgba(7, 16, 13, 0.94);
-
-        box-shadow:
-            0 20px 50px rgba(0, 0, 0, 0.45),
-            0 0 35px rgba(124, 255, 178, 0.05);
-
-        backdrop-filter: blur(20px);
-    }
-
-    .nav-links.active {
-        display: flex;
-    }
-
-    .nav-links a {
-        width: 100%;
-        padding: 13px 14px;
-    }
-
-    .nav-links a::after {
-        display: none;
-    }
-
-    .hero {
-        padding-top: calc(var(--header-height) + 55px);
-    }
-
-    .hero h1 {
-        font-size: clamp(48px, 16vw, 72px);
-    }
-
-    .hero-logo {
-        min-height: 250px;
-    }
-
-    .section {
-        width: min(100% - 28px, var(--max-width));
-        padding: 90px 0;
-    }
-
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .server-info {
-        grid-template-columns: 1fr;
-    }
-
-    .world-section {
-        min-height: 500px;
-    }
-
-    .world-content {
-        width: calc(100% - 28px);
-    }
-
-    .staff-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .final-cta {
-        width: calc(100% - 28px);
-        padding: 60px 22px;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 500px) {
-
-    .brand-name {
-        font-size: 13px;
-        letter-spacing: 0.1em;
-    }
-
-    .brand-mark {
-        width: 31px;
-        height: 31px;
-    }
-
-    .hero {
-        padding-left: 14px;
-        padding-right: 14px;
-    }
-
-    .hero h1 {
-        font-size: clamp(43px, 17vw, 62px);
-        letter-spacing: -0.06em;
-    }
-
-    .hero-tagline {
-        font-size: 19px;
-    }
-
-    .hero-description {
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .hero-buttons {
-        display: grid;
-        grid-template-columns: 1fr;
-        width: 100%;
-    }
-
-    .hero-buttons a {
-        width: 100%;
-    }
-
-    .hero-stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .hero-stats > * {
-        text-align: center;
-    }
-
-    .hero-logo {
-        min-height: 220px;
-        border-radius: 22px;
-    }
-
-    .hero-logo img {
-        width: 55%;
-    }
-
-    .section-heading {
-        margin-bottom: 35px;
-    }
-
-    .section-heading h2 {
-        font-size: 37px;
-    }
-
-    .feature-card {
-        min-height: auto;
-        padding: 23px;
-    }
-
-    .world-content h2 {
-        font-size: 44px;
-    }
-
-    .server-panel {
-        padding: 20px;
-        border-radius: 20px;
-    }
-
-    .server-info > div {
-        padding: 14px;
-    }
-
-    .community-buttons,
-    .final-cta-buttons {
-        display: grid;
-        grid-template-columns: 1fr;
-        width: 100%;
-    }
-
-    .community-buttons a,
-    .final-cta-buttons a {
-        width: 100%;
-    }
-
-    .final-cta h2 {
-        font-size: 42px;
-    }
-}
-
-
-/* =========================================================
-   VERY SMALL PHONES — 320px
-   ========================================================= */
-
-@media (max-width: 360px) {
-
-    .navbar {
-        width: calc(100% - 20px);
-    }
-
-    .brand-name {
-        font-size: 12px;
-    }
-
-    .hero {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-    .hero h1 {
-        font-size: 43px;
-    }
-
-    .hero-label {
-        font-size: 10px;
-        letter-spacing: 0.16em;
-    }
-
-    .server-badge {
-        font-size: 9px;
-    }
-
-    .hero-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .section {
-        width: calc(100% - 24px);
-    }
-
-    .world-content {
-        width: calc(100% - 24px);
-    }
-
-    .world-content h2 {
-        font-size: 40px;
-    }
-
-    .final-cta {
-        width: calc(100% - 24px);
-        padding-left: 17px;
-        padding-right: 17px;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
+});
