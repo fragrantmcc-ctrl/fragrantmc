@@ -78,7 +78,6 @@ function setServerStatus(status, online) {
         serverStatus.textContent = status;
     }
 
-
     if (heroStatusText) {
 
         heroStatusText.textContent =
@@ -87,7 +86,6 @@ function setServerStatus(status, online) {
                 : `Server ${status}`;
 
     }
-
 
     if (serverStatusDot) {
 
@@ -98,7 +96,6 @@ function setServerStatus(status, online) {
 
     }
 
-
     if (heroStatusDot) {
 
         heroStatusDot.classList.toggle(
@@ -107,7 +104,6 @@ function setServerStatus(status, online) {
         );
 
     }
-
 
     if (heroServerStatus) {
 
@@ -139,30 +135,22 @@ async function updateServerInformation() {
             "Checking...";
     }
 
-
     try {
-
-        /*
-         * SAME METHOD AS YOUR DISCORD BOT
-         */
 
         const url =
             `https://api.mcstatus.io/v2/status/java/${encodeURIComponent(
                 SERVER_CONFIG.serverAddress
             )}:${SERVER_CONFIG.javaPort}`;
 
-
         console.log(
             "Checking:",
             url
         );
 
-
         const response =
             await fetch(url, {
                 cache: "no-store"
             });
-
 
         if (!response.ok) {
             throw new Error(
@@ -170,20 +158,13 @@ async function updateServerInformation() {
             );
         }
 
-
         const server =
             await response.json();
-
 
         console.log(
             "Minecraft server response:",
             server
         );
-
-
-        /*
-         * SAME LOGIC AS DISCORD BOT
-         */
 
         const isOnline =
             server.online === true;
@@ -200,13 +181,11 @@ async function updateServerInformation() {
                 true
             );
 
-
             const onlinePlayers =
                 server.players?.online ?? 0;
 
             const maxPlayers =
                 server.players?.max ?? 0;
-
 
             if (playerCount) {
 
@@ -214,7 +193,6 @@ async function updateServerInformation() {
                     `${onlinePlayers} / ${maxPlayers}`;
 
             }
-
 
             console.log(
                 `FRAGRANT MC ONLINE — ${onlinePlayers}/${maxPlayers}`
@@ -233,17 +211,14 @@ async function updateServerInformation() {
             false
         );
 
-
         if (playerCount) {
             playerCount.textContent =
                 "0 / 0";
         }
 
-
         console.log(
             "FRAGRANT MC OFFLINE"
         );
-
 
     } catch (error) {
 
@@ -252,17 +227,10 @@ async function updateServerInformation() {
             error
         );
 
-
-        /*
-         * If the API cannot be reached,
-         * NEVER incorrectly display Online.
-         */
-
         setServerStatus(
             "Offline",
             false
         );
-
 
         if (playerCount) {
             playerCount.textContent =
@@ -275,7 +243,7 @@ async function updateServerInformation() {
 
 
 /* =========================================================
-   INITIAL CHECK
+   INITIAL SERVER CHECK
 ========================================================= */
 
 updateServerInformation();
@@ -289,3 +257,121 @@ setInterval(
     updateServerInformation,
     SERVER_CONFIG.refreshInterval
 );
+
+
+/* =========================================================
+   MOBILE HAMBURGER MENU
+========================================================= */
+
+const mobileMenuButton =
+    document.getElementById("mobileMenuButton");
+
+const navLinks =
+    document.getElementById("navLinks");
+
+
+if (mobileMenuButton && navLinks) {
+
+    mobileMenuButton.addEventListener(
+        "click",
+        function () {
+
+            const isOpen =
+                navLinks.classList.toggle("active");
+
+
+            mobileMenuButton.textContent =
+                isOpen ? "✕" : "☰";
+
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+
+
+            mobileMenuButton.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE MENU AFTER CLICKING A LINK
+    ===================================================== */
+
+    navLinks
+        .querySelectorAll("a")
+        .forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    navLinks.classList.remove("active");
+
+                    mobileMenuButton.textContent =
+                        "☰";
+
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    mobileMenuButton.setAttribute(
+                        "aria-label",
+                        "Open navigation menu"
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+/* =========================================================
+   SCROLL REVEAL EFFECTS
+========================================================= */
+
+const revealElements =
+    document.querySelectorAll(
+        ".reveal, .reveal-card"
+    );
+
+
+const revealObserver =
+    new IntersectionObserver(
+        function (entries) {
+
+            entries.forEach(function (entry) {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("show");
+
+                    revealObserver.unobserve(
+                        entry.target
+                    );
+
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.12
+        }
+    );
+
+
+revealElements.forEach(function (element) {
+
+    revealObserver.observe(element);
+
+});
