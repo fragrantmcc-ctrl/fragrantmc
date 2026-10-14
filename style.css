@@ -1969,3 +1969,93 @@ footer strong {
     }
 
 }
+
+/* =========================================================
+   STORE — MOBILE ONE CARD PER ROW
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .store-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .store-card {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .store-image {
+        width: 100%;
+        height: 220px;
+    }
+
+    .store-card-content {
+        padding: 20px;
+    }
+
+    .store-card-top {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .store-card h3 {
+        font-size: 18px;
+    }
+
+    .store-card-content p {
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .store-price {
+        font-size: 9px;
+        padding: 5px 8px;
+    }
+
+}
+
+
+/* FRAGRANT MC STORE — MOBILE CARD LAYOUT */
+@media (max-width: 700px) {
+    .store-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 22px;
+        width: 100%;
+    }
+
+    .store-card {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .store-image {
+        width: 100%;
+    }
+
+    .store-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+    }
+
+    .store-card-content {
+        padding: 18px;
+    }
+
+    .store-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .store-card-content p {
+        line-height: 1.7;
+    }
+}
