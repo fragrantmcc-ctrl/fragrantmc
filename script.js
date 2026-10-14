@@ -375,3 +375,19 @@ revealElements.forEach(function (element) {
     revealObserver.observe(element);
 
 });
+
+
+const backToTop = document.getElementById("backToTop");
+
+if (backToTop) {
+    window.addEventListener("scroll", () => {
+        backToTop.classList.toggle("show", window.scrollY > 300);
+    }, { passive: true });
+
+    backToTop.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+}
